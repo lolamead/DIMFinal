@@ -1,0 +1,32 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace MiniMonsters
+{
+    public class UIController : MonoBehaviour
+    {
+        public List<GameObject> objectToDisable;
+
+        private MonsterBattleController monsterBattleController;
+
+        private void Awake()
+        {
+            monsterBattleController = GetComponent<MonsterBattleController>();
+            monsterBattleController.onbattleEnd += RemoveUI;
+        }
+
+        private void RemoveUI(bool result, MonsterBattleController controller)
+        {
+            foreach (GameObject obj in objectToDisable)
+            {
+                obj.gameObject.SetActive(false);
+            }
+        }
+
+        private void OnDisable()
+        {
+            monsterBattleController.onbattleEnd -= RemoveUI;
+        }
+    }
+}
