@@ -1,0 +1,28 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraDetection : MonoBehaviour
+{
+    public Transform cameraOrigin;
+    public float viewDistance = 10f;
+
+    void OnTriggerStay(Collider other)
+    {
+        if (!other.CompareTag("Detective"))
+            return;
+
+        Vector3 dir = (other.transform.position - cameraOrigin.position).normalized;
+
+        Ray ray = new Ray(cameraOrigin.position, dir);
+        RaycastHit hit;
+
+        if (Physics.Raycast(ray, out hit, viewDistance))
+        {
+            if (hit.collider.CompareTag("Detective"))
+            {
+                CameraAlarm.Instance.TriggerAlarm();
+            }
+        }
+    }
+}
