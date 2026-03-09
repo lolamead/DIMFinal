@@ -1,0 +1,86 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class TurnManager : MonoBehaviour
+{
+    public Doe player;
+    public Enemy enemy;
+
+    public Slider tetherBar;
+    public Slider manaBar;
+    public Slider enemyHealthBar;
+
+    private bool playerTurn = true;
+    private bool defending = false;
+
+    void Start()
+    {
+        UpdateUI();
+    }
+
+    public void PlayerActionAttack()
+    {
+        if (!playerTurn) return;
+        player.Attack(enemy);
+        EndPlayerTurn();
+    }
+
+    public void PlayerActionDefend()
+    {
+        if (!playerTurn) return;
+        defending = true;
+        EndPlayerTurn();
+    }
+
+    public void PlayerActionManaDrain()
+    {
+        if (!playerTurn) return;
+        player.ManaDrain(enemy);
+        EndPlayerTurn();
+    }
+
+    void EndPlayerTurn()
+    {
+        UpdateUI();
+        if (CheckEndConditions()) return;
+        playerTurn = false;
+        StartCoroutine(EnemyTurnRoutine());
+    }
+
+    IEnumerator EnemyTurnRoutine()
+    {
+        yield return new WaitForSeconds(0.5f); // small pause
+        enemy.EnemyTurn(player);
+        if (defending) { player.tether += 1; defending = false; } // simple defend effect
+        UpdateUI();
+        if (!CheckEndConditions())
+            playerTurn = true;
+    }
+
+    bool CheckEndConditions()
+    {
+        if (player.tether <= 0)
+        {
+            player.ResetTether();
+            enemy.ResetEnemy();
+            UpdateUI();
+            Debug.Log("Combat Reset!");
+            return true;
+        }
+        if (enemy.health <= 0)
+        {
+            Debug.Log("Enemy Defeated!");
+            return true;
+        }
+        return false;
+    }
+
+    void UpdateUI()
+    {
+        tetherBar.value = (float)player.tether / player.maxTether;
+        manaBar.value = (float)player.mana / player.maxMana;
+        enemyHealthBar.value = (float)enemy.health / 8f;
+    }
+}
