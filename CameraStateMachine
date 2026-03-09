@@ -1,0 +1,79 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraStateMachine : MonoBehaviour
+{
+    public Transform pivot;
+
+    public float maxAngle = 45f;
+    public float rotationSpeed = 30f;
+
+    public float pauseTime = 1.5f;
+
+    float timer;
+
+    enum CameraState
+    {
+        RotatingRight,
+        PauseRight,
+        RotatingLeft,
+        PauseLeft
+    }
+
+    CameraState state = CameraState.RotatingRight;
+
+    void Update()
+    {
+        switch (state)
+        {
+            case CameraState.RotatingRight:
+                RotateRight();
+                break;
+
+            case CameraState.PauseRight:
+                Pause(CameraState.RotatingLeft);
+                break;
+
+            case CameraState.RotatingLeft:
+                RotateLeft();
+                break;
+
+            case CameraState.PauseLeft:
+                Pause(CameraState.RotatingRight);
+                break;
+        }
+    }
+
+    void RotateRight()
+    {
+        pivot.Rotate(Vector3.up * rotationSpeed * Time.deltaTime);
+
+        if (pivot.localEulerAngles.y >= maxAngle &&
+            pivot.localEulerAngles.y < 180)
+        {
+            state = CameraState.PauseRight;
+            timer = pauseTime;
+        }
+    }
+
+    void RotateLeft()
+    {
+        pivot.Rotate(Vector3.up * -rotationSpeed * Time.deltaTime);
+
+        if (pivot.localEulerAngles.y <= 360 - maxAngle &&
+            pivot.localEulerAngles.y > 180)
+        {
+            state = CameraState.PauseLeft;
+            timer = pauseTime;
+        }
+    }
+
+    void Pause(CameraState nextState)
+    {
+        timer -= Time.deltaTime;
+
+        if (timer <= 0)
+            state = nextState;
+    }
+}
