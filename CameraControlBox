@@ -1,0 +1,21 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class CameraControlBox : MonoBehaviour
+{
+    public CameraPowerReceiver[] firstFloorCameras;
+
+    bool powerOn = true;
+
+    public void Interact()
+    {
+        powerOn = !powerOn;
+
+        foreach (var cam in firstFloorCameras)
+        {
+            cam.SetPower(powerOn);
+        }
+    }
+
+}
