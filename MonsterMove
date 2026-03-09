@@ -1,0 +1,28 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+namespace MiniMonsters
+{
+    [CreateAssetMenu(fileName = "New Monster Move", menuName = "MiniMonsters/ New Monster Move")]
+    public class MonsterMove : ScriptableObject
+    {
+        public new string name;
+
+        public MonsterType type;
+
+        public int powerPoints;
+
+        public int power;
+
+        public int accuracy;
+
+        public DamageType damageType;
+
+        public enum DamageType
+        {
+            Physical,
+            Special
+        }
+    }
+}
