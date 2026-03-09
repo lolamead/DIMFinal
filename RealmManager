@@ -1,0 +1,100 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+
+public enum Realm
+{
+    Physical,
+    Ghost
+}
+
+public class RealmManager : MonoBehaviour
+{
+    public static RealmManager Instance;
+
+    public Realm currentRealm = Realm.Physical;
+
+    [Header("Characters")]
+    public Transform detective;
+    public Transform doe;
+
+    public MonoBehaviour detectiveMovement;
+    public MonoBehaviour doeMovement;
+
+    [Header("Cameras")]
+    public Camera detectiveCamera;
+    public Camera doeCamera;
+
+    [Header("Tether")]
+    public float tetherRadius = 5f;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    void Start()
+    {
+        SetRealm(Realm.Physical);
+    }
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            ToggleRealm();
+        }
+
+        EnforceTether();
+    }
+
+    void ToggleRealm()
+    {
+        if (currentRealm == Realm.Physical)
+            SetRealm(Realm.Ghost);
+        else
+            SetRealm(Realm.Physical);
+    }
+
+    public void SetRealm(Realm realm)
+    {
+        currentRealm = realm;
+
+        if (realm == Realm.Physical)
+        {
+            detectiveCamera.enabled = true;
+            doeCamera.enabled = false;
+
+            detectiveMovement.enabled = true;
+            doeMovement.enabled = false;
+        }
+        else
+        {
+            detectiveCamera.enabled = false;
+            doeCamera.enabled = true;
+
+            detectiveMovement.enabled = false;
+            doeMovement.enabled = true;
+        }
+    }
+
+    void EnforceTether()
+    {
+        Vector3 offset = doe.position - detective.position;
+        offset.y = 0;
+
+        if (offset.magnitude > tetherRadius)
+        {
+            Vector3 clamped = detective.position + offset.normalized * tetherRadius;
+
+            doe.position = new Vector3(
+                clamped.x,
+                doe.position.y,
+                clamped.z
+            );
+        }
+    }
+}
+
+
