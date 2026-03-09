@@ -1,0 +1,27 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class DetectionManager : MonoBehaviour
+{
+    public static DetectionManager Instance;
+
+    public Transform player;
+    public Transform checkpoint;
+
+    void Awake()
+    {
+        Instance = this;
+    }
+
+    public void PlayerDetected()
+    {
+        ResetToCheckpoint();
+    }
+
+    void ResetToCheckpoint()
+    {
+        player.position = checkpoint.position;
+    }
+}
+
